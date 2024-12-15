@@ -23,7 +23,7 @@ void setup() {
         pinMode(pin, OUTPUT);
     }
 
-    String brailled_text = "100000 101100 110000 100000 101100 110000 100000 101100 110000";
+    String brailled_text = "100000 101100 110000 100000 101100 110000 100000 101100 110000 000010 011011 000100 100011";
 
     display_braille(brailled_text);
 
@@ -56,9 +56,18 @@ void display_braille(String brailled_text) {
     String braille_unicode_spaced = "";
     String braille_unicode = "";
 
+    String cell = "";
+
     // Display brailled list
-    for (int i = 0; i < brailled_list_length; i++) {
-        String cell = brailled_list[i];
+
+    // loop count must be a multiple of n_cells
+    for (int i = 0; i < (brailled_list_length + ( n_cells - (brailled_list_length % n_cells) ) ) ; i++) {
+
+        if (i >= (brailled_list_length) ) {
+          cell = "000000"; // remainder at the final n_cells loop
+        } else {
+          cell = brailled_list[i];
+        }
 
         // Get unicode character
         if (unicode.find(cell) != unicode.end()) {
