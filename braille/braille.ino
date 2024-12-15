@@ -10,9 +10,7 @@ int first_pin = 22; // right-hand side pins of Arduino MEGA, 46 for cell 5
 int timer = 500; // ms for cell
 
 int n_dots = 6;
-int n_cells = 4; // 0 to 5
-
-int br[7] = {0, 0, 0, 0, 0, 0, 0}; // index 0 unused
+int n_cells = 5; // 0 to 5
 
 // function declarations
 void display_braille(String brailled_text);
@@ -25,7 +23,7 @@ void setup() {
         pinMode(pin, OUTPUT);
     }
 
-    String brailled_text = "100000 101100 110000 011011";
+    String brailled_text = "100000 101100 110000 100000 101100 110000 100000 101100 110000";
 
     display_braille(brailled_text);
 
@@ -75,7 +73,7 @@ void display_braille(String brailled_text) {
 
         // Set pins to display braille cell on LEDs
         for (int j = 0; j < n_dots; j++) {
-            digitalWrite(first_pin + i * n_dots + j, cell.charAt(j) - '0');
+            digitalWrite(first_pin + (i % n_cells) * n_dots + j, cell.charAt(j) - '0');
         }
 
         delay(timer);
