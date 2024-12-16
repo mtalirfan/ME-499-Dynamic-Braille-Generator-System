@@ -1,3 +1,6 @@
+#include <ArduinoSTL.h>
+#include <vector>
+
 #include "braille_dictionaries.h"
 
 // global variables
@@ -14,10 +17,11 @@ int timer_display = 1000; // ms for display of n_cells
 String space_out_symbols_punctuation(String text);
 String space_out_alphanumeric(String text_sym_spaced);
 
-String convert_numeric_word(String text_alphanumeric_spaced);
 String convert_numeric_character(String brailled_text_num_word);
 String convert_symbols_punctuation(String brailled_text_num);
 String convert_capital(String brailled_text_sym);
+
+String convert_lowercase_grade1(String brailled_text_caps);
 
 void display_braille(String brailled_text);
 
@@ -35,12 +39,18 @@ void setup() {
 
     String text = F("\"Hello World!\" 12345");
 
-    Serial.println(text);
-
     // Process
     String text_sym_spaced = space_out_symbols_punctuation(text);
     String text_alphanumeric_spaced = space_out_alphanumeric(text_sym_spaced);
 
+    String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
+    String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
+    // String brailled_text_caps = convert_capital(brailled_text_sym);
+
+    // String brailled_text = convert_lowercase_grade1(brailled_text_caps);
+
+
+    // display_braille(brailled_text);
 }
 
 void loop() {
@@ -53,74 +63,212 @@ void loop() {
 // functions
 
 String space_out_symbols_punctuation(String text) {
-    String textSymSpaced = "";
+
+    Serial.println(text);
+
+    String text_sym_spaced = "";
     for (int i = 0; i < text.length(); i++) {
-        String ch = String(text.charAt(i));
-        if (punctuation.find(ch) != punctuation.end()) {
-            textSymSpaced += " " + ch + " ";
-        } else if (ch == " ") {
-            textSymSpaced += " ‎ ";
+        if (text[i] == ' ') {
+            text_sym_spaced += " ‎ ";
+        } else if (punctuation.find(String(text[i])) != punctuation.end()) {
+            text_sym_spaced += " " + String(text[i]) + " ";
         } else {
-            textSymSpaced += ch;
+            text_sym_spaced += String(text[i]);
         }
     }
 
-    // Opening and Closing Quotations do not display in Serial Monitor
-    
+    // Opening and Closing Quotations do not display in Serial Monitor and won't convert
     // // count all double quotations to replace for opening and closing
-    // int quotationCount = 0;
-    // for (int i = 0; i < textSymSpaced.length(); i++) {
-    //     if (textSymSpaced[i] == '"') {
-    //         quotationCount++;
+    // int quotation_count = 0;
+    // for (int i = 0; i < text_sym_spaced.length(); i++) {
+    //     if (text_sym_spaced[i] == '"') {
+    //         quotation_count++;
     //     }
     // }
 
     // // Replace nth substrings of "foo" to be replaced
-    // for (int n = quotationCount; n >= 2; n -= 2) {
+    // for (int n = quotation_count; n >= 2; n -= 2) {
     //     int nthOccur = 0;
-    //     for (int i = 0; i < textSymSpaced.length(); i++) {
-    //         if (textSymSpaced[i] == '"') {
+    //     for (int i = 0; i < text_sym_spaced.length(); i++) {
+    //         if (text_sym_spaced[i] == '"') {
     //             nthOccur++;
     //             if (nthOccur == n) {
-    //                 textSymSpaced[i] = '”';
+    //                 text_sym_spaced[i] = '”';
     //             } else if (nthOccur == n - 1) {
-    //                 textSymSpaced[i] = '"';
+    //                 text_sym_spaced[i] = '"';
     //             }
     //         }
     //     }
     // }
 
-    // for (int i = 0; i < textSymSpaced.length(); i++) {
-    //     if (textSymSpaced[i] == '"') {
-    //         textSymSpaced[i] = '“';
+    // for (int i = 0; i < text_sym_spaced.length(); i++) {
+    //     if (text_sym_spaced[i] == '"') {
+    //         text_sym_spaced[i] = '“';
     //     }
     // }
 
 
-    Serial.println(textSymSpaced);
+    Serial.println(text_sym_spaced);
 
-    return textSymSpaced;
+    return text_sym_spaced;
 }
 
 String space_out_alphanumeric(String text_sym_spaced) {
-    String result = "";
+    String text_alphanumeric_spaced = "";
     for (int i = 0; i < text_sym_spaced.length(); i++) {
         if (i < (text_sym_spaced.length() - 1)) {
-            if ((isDigit(text_sym_spaced.charAt(i)) && isAlpha(text_sym_spaced.charAt(i + 1))) ||
-                (isAlpha(text_sym_spaced.charAt(i)) && isDigit(text_sym_spaced.charAt(i + 1)))) {
-                result += String(text_sym_spaced.charAt(i)) + " ";
+            if ((isdigit(text_sym_spaced[i]) && isalpha(text_sym_spaced[i + 1])) || 
+                (isalpha(text_sym_spaced[i]) && isdigit(text_sym_spaced[i + 1]))) {
+                text_alphanumeric_spaced += String(text_sym_spaced[i]) + " ";
             } else {
-                result += String(text_sym_spaced.charAt(i));
+                text_alphanumeric_spaced += String(text_sym_spaced[i]);
             }
         } else {
-            result += String(text_sym_spaced.charAt(i));
+            text_alphanumeric_spaced += String(text_sym_spaced[i]);
         }
     }
 
-    Serial.println(result);
+    Serial.println(text_alphanumeric_spaced);
 
-    return result;
+    return text_alphanumeric_spaced;
 }
+
+// TODO: Numeric Word and Character functions
+
+String convert_numeric_character(String brailled_text_num_word) {
+    String brailled_text_num = "";
+    for (int i = 0; i < brailled_text_num_word.length(); i++) {
+        if (isDigit(brailled_text_num_word.charAt(i))) {
+            brailled_text_num += " 001111 " + alphanumeric[String(brailled_text_num_word.charAt(i))] + " ";
+        } else {
+            brailled_text_num += brailled_text_num_word.charAt(i);
+        }
+    }
+
+    Serial.println(brailled_text_num);
+
+    return brailled_text_num;
+}
+
+String convert_symbols_punctuation(String brailled_text_num) {
+    std::vector<String> text_list_num;
+    String token = "";
+    for (int i = 0; i < brailled_text_num.length(); i++) {
+        if (brailled_text_num[i] == ' ') {
+            if (token.length() > 0) {
+                text_list_num.push_back(token);
+                token = "";
+            }
+        } else {
+            token += brailled_text_num[i];
+        }
+    }
+    if (token.length() > 0) {
+        text_list_num.push_back(token);
+    }
+
+    String brailled_text_sym = "";
+    for (int i = 0; i < text_list_num.size(); i++) {
+        if (punctuation.find(text_list_num[i]) != punctuation.end()) {
+            brailled_text_sym += punctuation[text_list_num[i]];
+        } else {
+            brailled_text_sym += text_list_num[i] + " ";
+        }
+    }
+
+    Serial.println(brailled_text_sym);
+
+    return brailled_text_sym;
+}
+
+// String convert_capital(String brailled_text_sym) {
+//     std::vector<String> text_list_sym;
+//     String token = "";
+//     for (int i = 0; i < brailled_text_sym.length(); i++) {
+//         if (brailled_text_sym[i] == ' ') {
+//             if (token.length() > 0) {
+//                 text_list_sym.push_back(token);
+//                 token = "";
+//             }
+//         } else {
+//             token += brailled_text_sym[i];
+//         }
+//     }
+//     if (token.length() > 0) {
+//         text_list_sym.push_back(token);
+//     }
+
+//     String brailled_text_caps_word = "";
+//     for (int i = 0; i < text_list_sym.size(); i++) {
+//         if (text_list_sym[i].length() > 1 && isupper(text_list_sym[i][0])) {
+//             brailled_text_caps_word += " 000001 000001 " + tolower(text_list_sym[i]) + " ";
+//         } else {
+//             brailled_text_caps_word += " " + text_list_sym[i] + " ";
+//         }
+//     }
+
+//     std::vector<String> text_list_caps_word;
+//     token = "";
+//     for (int i = 0; i < brailled_text_caps_word.length(); i++) {
+//         if (brailled_text_caps_word[i] == ' ') {
+//             if (token.length() > 0) {
+//                 text_list_caps_word.push_back(token);
+//                 token = "";
+//             }
+//         } else {
+//             token += brailled_text_caps_word[i];
+//         }
+//     }
+//     if (token.length() > 0) {
+//         text_list_caps_word.push_back(token);
+//     }
+
+//     String brailled_text_caps = "";
+//     for (int i = 0; i < text_list_caps_word.size(); i++) {
+//         if (isupper(text_list_caps_word[i][0])) {
+//             brailled_text_caps += " 000001 " + tolower(text_list_caps_word[i]) + " ";
+//         } else {
+//             brailled_text_caps += text_list_caps_word[i];
+//         }
+//     }
+
+//     Serial.println(brailled_text_caps);
+
+//     return brailled_text_caps;
+// }
+
+// String convert_lowercase_grade1(String brailled_text_caps) {
+//     std::vector<String> text_list_caps;
+//     String token = "";
+//     for (int i = 0; i < brailled_text_caps.length(); i++) {
+//         if (brailled_text_caps[i] == ' ') {
+//             if (token.length() > 0) {
+//                 text_list_caps.push_back(token);
+//                 token = "";
+//             }
+//         } else {
+//             token += brailled_text_caps[i];
+//         }
+//     }
+//     if (token.length() > 0) {
+//         text_list_caps.push_back(token);
+//     }
+
+//     String brailled_text = "";
+//     for (int i = 0; i < text_list_caps.size(); i++) {
+//         if (alphanumeric.find(text_list_caps[i]) != alphanumeric.end() && isalpha(text_list_caps[i][0])) {
+//             brailled_text += alphanumeric[text_list_caps[i]];
+//         } else if (isdigit(text_list_caps[i][0]) || text_list_caps[i] == " ") {
+//             brailled_text += text_list_caps[i];
+//         } else {
+//             brailled_text += " 000000 ";
+//         }
+//     }
+
+//    Serial.println(brailled_text);
+
+//    return brailled_text;
+// }
 
 void display_braille(String brailled_text) {
     // Splitting the brailled_text into a list
