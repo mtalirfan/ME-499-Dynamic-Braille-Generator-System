@@ -1,6 +1,4 @@
-#include <Arduino.h>
 #include <ArduinoSTL.h>
-#include <string>
 #include <map>
 
 std::map<String, String> unicode = { // 6 digit code to unicode characters, from https://unicode.org/charts/nameslist/c_2800.html
@@ -22,327 +20,341 @@ std::map<String, String> unicode = { // 6 digit code to unicode characters, from
     {"001111", "⠼"}, {"101111", "⠽"}, {"011111", "⠾"}, {"111111", "⠿"}
 };
 
+std::map<String, String> alphanumeric = {
+    {"1", "100000 "}, {"2", "110000 "}, {"3", "100100 "}, {"4", "100110 "}, {"5", "100010 "},
+    {"6", "110100 "}, {"7", "110110 "}, {"8", "110010 "}, {"9", "010100 "}, {"0", "010110 "},
+
+    {"a", "100000 "}, {"b", "110000 "}, {"c", "100100 "}, {"d", "100110 "}, {"e", "100010 "},
+    {"f", "110100 "}, {"g", "110110 "}, {"h", "110010 "}, {"i", "010100 "}, {"j", "010110 "},
+
+    {"k", "101000 "}, {"l", "111000 "}, {"m", "101100 "}, {"n", "101110 "}, {"o", "101010 "},
+    {"p", "111100 "}, {"q", "111110 "}, {"r", "111010 "}, {"s", "011100 "}, {"t", "011110 "},
+
+    {"u", "101001 "}, {"v", "111001 "}, {"x", "101101 "}, {"y", "101111 "}, {"z", "101011 "},
+                                                                            {"w", "010111 "}
+
+    // {"A", "000001 100000 "}, {"B", "000001 110000 "}, {"C", "000001 100100 "}, {"D", "000001 100110 "},
+    // {"E", "000001 100010 "}, {"F", "000001 110100 "}, {"G", "000001 110110 "}, {"H", "000001 110010 "},
+    // {"I", "000001 010100 "}, {"J", "000001 010110 "}, {"K", "000001 101000 "}, {"L", "000001 111000 "},
+    // {"M", "000001 101100 "}, {"N", "000001 101110 "}, {"O", "000001 101010 "}, {"P", "000001 111100 "},
+    // {"Q", "000001 111110 "}, {"R", "000001 111010 "}, {"S", "000001 011100 "}, {"T", "000001 011110 "},
+    // {"U", "000001 101001 "}, {"V", "000001 111001 "}, {"X", "000001 101101 "}, {"Y", "000001 101111 "},
+    // {"Z", "000001 101011 "}, {"W", "000001 010111 "}
+
+    // // NON-UEB ALPHABET FOR OTHER LANGUAGES
+    // // SPANISH
+    // {"á", " 111011 "},  // 000110 001100 100000 in UEB
+    // {"é", " 011101 "},  // 000110 001100 100010
+    // {"í", " 001100 "},  // 000110 001100 010100
+    // {"ó", " 001101 "},  // 000110 001100 101010
+    // {"ú", " 011111 "},  // 000110 001100 101001
+    // {"ü", " 110011 "},  // 000110 010010 101001
+    // {"ñ", " 110111 "},  // 000110 110111 101110
+    // // FRENCH
+    // {"ç", " 111101 "},
+    // // {"é", " 111111 "}, // also in Spanish
+    // {"à", " 111011 "},
+    // {"è", " 011101 "},
+    // {"î", " 100101 "},
+    // {"ô", " 100111 "},
+    // {"ë", " 110101 "},
+    // {"ê", " 110001 "}
+};
+
 std::map<String, String> punctuation = {
     // " ": " 000000 ",
     {"‎", " 000000 "},  // convert all whitespaces to an empty unicode character, to retain braille space 000000 of the original text
     {".", " 010011 "},
-    {"…", " 010011 010011 010011 "},
+    // {"…", " 010011 010011 010011 "},
     {",", " 010000 "},
     {"?", " 011001 "},
-    {"¿", " 010001 "},  // 000110 000011 011010 in UEB
+    // {"¿", " 010001 "},  // 000110 000011 011010 in UEB
     {"“", " 011001 "},
     {"”", " 001011 "},
     {":", " 010010 "},
-    {"∷", " 010010 010010 "},
+    // {"∷", " 010010 010010 "},
     {";", " 011000 "},
     {"!", " 011010 "},
-    {"¡", " 000110 000011 011010 "},  // 011010 in Spanish Braille
+    // {"¡", " 000110 000011 011010 "},  // 011010 in Spanish Braille
     // {"_", " 000001 001001 "}, // long dash
     {"_", " 000101 001001 "},  // underscore preferred
     {"π", " 000101 111100 "},
     {"\"", " 000001 011011 "},
-    {"‘", " 000001 011001 "},
-    {"’", " 000001 001011 "},
+    // {"‘", " 000001 011001 "},
+    // {"’", " 000001 001011 "},
     {"'", " 001000 "},  // single quotation
     // {"’", " 001000 "}, // apostrophe
-    {"′", " 011011 "},  // feet, single prime
-    {"″", " 011011 011011 "},  // inches, double prime
-    {"«", " 000111 011001 "},
-    {"»", " 000111 001011 "},
-    {"/", " 000111 001100 "},  // forward slash preferred, contains indicator
+    // {"′", " 011011 "},  // feet, single prime
+    // {"″", " 011011 011011 "},  // inches, double prime
+    // {"«", " 000111 011001 "},
+    // {"»", " 000111 001011 "},
+    // {"/", " 000111 001100 "},  // forward slash preferred, contains indicator
     // {"/", " 001100 "},  // divide sign
-    {"\\", " 000111 100001 "},
+    // {"\\", " 000111 100001 "},
     {"{", " 000111 110001 "},
     {"}", " 000111 001110 "},
-    {"∠", " 000111 010101 "},
+    // {"∠", " 000111 010101 "},
     {"#", " 000111 100111 "},
-    {"•", " 000111 010011 "},
+    // {"•", " 000111 010011 "},
     {"[", " 000101 110001 "},
     {"]", " 000101 001110 "},
     {"%", " 000101 001011 "},
     {"—", " 000001 001001 "},
-    {"〃", " 000010 010000 "},
+    // {"〃", " 000010 010000 "},
     {"(", " 000010 110001 "},
     {")", " 000010 001110 "},
     {"+", " 000010 011010 "},
     {"-", " 001001 "},  // using simple hyphen for minus and dashes
-    {"–", " 000010 001001 "},
+    // {"–", " 000010 001001 "},
     {"×", " 000010 011001 "},  // multiplication
     {"÷", " 000010 001100 "},
     {"=", " 000010 011011 "},
-    {"≠", " 000010 011011 000100 100011 "},
+    // {"≠", " 000010 011011 000100 100011 "},
     {"*", " 000010 001010 "},
-    {"√", " 000010 100101 "},
+    // {"√", " 000010 100101 "},
     {"@", " 000100 100000 "},
-    {"¢", " 000100 100100 "},
-    {"€", " 000100 100010 "},
-    {"₣", " 000100 110100 "},
-    {"£", " 000100 111000 "},
-    {"₦", " 000100 101110 "},
+    // {"¢", " 000100 100100 "},
+    // {"€", " 000100 100010 "},
+    // {"₣", " 000100 110100 "},
+    // {"£", " 000100 111000 "},
+    // {"₦", " 000100 101110 "},
     {"$", " 000100 011100 "},
-    {"¥", " 000100 101111 "},
+    // {"¥", " 000100 101111 "},
     {"&", " 000100 111101 "},
     {"<", " 000100 110001 "},
     {"^", " 000100 010001 "},  // caret
     {"~", " 000100 001010 "},  // tilde
     {">", " 000100 001110 "},
-    {"✓", " 000100 100101 "},
-    {"†", " 000100 000001 100111 "},
-    {"‡", " 000100 000001 110111 "},
-    {"©", " 000110 100100 "},
-    {"°", " 000110 010110 "},
-    {"¶", " 000110 111100 "},
-    {"®", " 000110 111010 "},
-    {"§", " 000110 011100 "},
-    {"™", " 000110 011110 "},
-    {"♀", " 000110 101101 "},
-    {"♂", " 000110 101111 "},
-    {"´", " 000110 001100 "},
-    {"`", " 000110 100001 "},
-    {"¨", " 000110 010010 "},  // umlaut
-    // {"^", " 000110 100101 "}, // circumflex
-    // {"~", " 000110 110111 "}, // tilde accent
-    // {"→", " 110011 101010 "},
-    // {"↓", " 110011 100101 "},
-    // {"←", " 110011 010101 "},
-    // {"↑", " 110011 001101 "},
-    // // FRACTION NUMBERS
-    // {"½", " 001111 100000 001100 110000 "},
-    // {"⅓", " 001111 100000 001100 100100 "},
-    // {"¼", " 001111 100000 001100 100110 "},
-    // {"⅕", " 001111 100000 001100 100010 "},
-    // {"⅙", " 001111 100000 001100 110100 "},
-    // {"⅐", " 001111 100000 001100 110110 "},
-    // {"⅛", " 001111 100000 001100 110010"},
-    // {"⅑", " 001111 100000 001100 010100 "},
-    // {"⅒", " 001111 100000 001100 100000 010110 "},
-    // {"⅔", " 001111 110000 001100 100100 "},
-    // {"⅖", " 001111 110000 001100 100010 "},
-    // {"⅜", " 001111 100100 001100 110010 "},
-    // {"¾", " 001111 100100 001100 100110 "},
-    // {"⅗", " 001111 100100 001100 100010 "},
-    // {"⅘", " 001111 100110 001100 100010 "},
-    // {"⅚", " 001111 100010 001100 110100 "},
-    // {"⅝", " 001111 100010 001100 110010 "},
-    // {"⅞", " 001111 110110 001100 110010 "},
-    // {"↉", " 001111 010110 001100 100100 "},
-    // {"⅟", " 001111 100000 001100 "}
+    // {"✓", " 000100 100101 "},
+    // {"†", " 000100 000001 100111 "},
+    // {"‡", " 000100 000001 110111 "},
+    // {"©", " 000110 100100 "},
+    // {"°", " 000110 010110 "},
+    // {"¶", " 000110 111100 "},
+    // {"®", " 000110 111010 "},
+    // {"§", " 000110 011100 "},
+    // {"™", " 000110 011110 "},
+    // {"♀", " 000110 101101 "},
+    // {"♂", " 000110 101111 "},
+    // {"´", " 000110 001100 "},
+    // {"`", " 000110 100001 "},
+    // {"¨", " 000110 010010 "},  // umlaut
 };
 
-std::map<String, String> wordsigns = { // all: alphabetic, strong and lower
-    // ALPHABETIC WORDSIGNS
-    // no sign for a
-    {"but", "b"},
-    {"can", "c"},
-    {"do", "d"},
-    {"every", "e"},
-    {"from", "f"},
-    {"go", "g"},
-    {"have", "h"},
-    // no sign for i
-    {"just", "j"},
-    {"knowledge", "k"},
-    {"like", "l"},
-    {"more", "m"},
-    {"not", "n"},
-    // no sign for o
-    {"people", "p"},
-    {"quite", "q"},
-    {"rather", "r"},
-    {"so", "s"},
-    {"that", "t"},
-    {"us", "u"},
-    {"very", "v"},
-    {"will", "w"},
-    {"it", "x"},
-    {"you", "y"},
-    {"as", "z"},
-    // STRONG WORDSIGNS top bottom left right dots
-    {"child", " 100001 "},
-    {"shall", " 100101 "},
-    {"this", " 100111 "},
-    {"which", " 100011 "},
-    {"out", " 110011 "},
-    {"still", " 001100 "},
-    // LOWER WORDSIGNS not dots 1 or 4
-    {"be", " 011000 "},
-    {"enough", " 010001 "},
-    {"were", " 011011 "},
-    {"his", " 011001 "},
-    {"in", " 001010 "},
-    {"was", " 001011 "}
-};
+// std::map<String, String> wordsigns = { // all: alphabetic, strong and lower
+//     // ALPHABETIC WORDSIGNS
+//     // no sign for a
+//     {"but", "b"},
+//     {"can", "c"},
+//     {"do", "d"},
+//     {"every", "e"},
+//     {"from", "f"},
+//     {"go", "g"},
+//     {"have", "h"},
+//     // no sign for i
+//     {"just", "j"},
+//     {"knowledge", "k"},
+//     {"like", "l"},
+//     {"more", "m"},
+//     {"not", "n"},
+//     // no sign for o
+//     {"people", "p"},
+//     {"quite", "q"},
+//     {"rather", "r"},
+//     {"so", "s"},
+//     {"that", "t"},
+//     {"us", "u"},
+//     {"very", "v"},
+//     {"will", "w"},
+//     {"it", "x"},
+//     {"you", "y"},
+//     {"as", "z"},
+//     // STRONG WORDSIGNS top bottom left right dots
+//     {"child", " 100001 "},
+//     {"shall", " 100101 "},
+//     {"this", " 100111 "},
+//     {"which", " 100011 "},
+//     {"out", " 110011 "},
+//     {"still", " 001100 "},
+//     // LOWER WORDSIGNS not dots 1 or 4
+//     {"be", " 011000 "},
+//     {"enough", " 010001 "},
+//     {"were", " 011011 "},
+//     {"his", " 011001 "},
+//     {"in", " 001010 "},
+//     {"was", " 001011 "}
+// };
 
-std::map<String, String> shortforms = {
-    {"about", "ab"},
-    {"above", "abv"},
-    {"according", "ac"},
-    {"across", "acr"},
-    // {"after", "af"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"afternoon", "afn"},
-    {"afterward", "afw"},
-    {"after", "af"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    // {"again", "ag"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"against", "agst"},
-    {"again", "ag"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"almost", "alm"},
-    {"already", "alr"},
-    {"also", "al"},
-    {"although", "alth"},
-    {"altogether", "alt"},
-    {"always", "alw"},
-    {"because", "bec"},
-    {"before", "bef"},
-    {"behind", "beh"},
-    {"below", "bel"},
-    {"beneath", "ben"},
-    {"beside", "bes"},
-    {"between", "bet"},
-    {"beyond", "bey"},
-    {"blind", "bl"},
-    {"braille", "brl"},
-    {"children", "chn"},
-    {"conceive", "concv"},
-    {"conceiving", "concvg"},
-    {"could", "cd"},
-    {"deceive", "dcv"},
-    {"deceiving", "dcvg"},
-    {"declare", "dcl"},
-    {"declaring", "dclg"},
-    {"either", "ei"},
-    {"first", "fst"},
-    {"friend", "fr"},
-    {"good", "gd"},
-    {"great", "grt"},
-    {"herself", "herf"},
-    // {"him", "hm"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"himself", "hmf"},
-    {"him", "hm"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"immediate", "imm"},
-    // {"its", "xs"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"itself", "xf"},
-    {"its", "xs"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"letter", "lr"},
-    {"little", "ll"},
-    {"much", "mch"},
-    {"must", "mst"},
-    {"myself", "myf"},
-    {"necessary", "nec"},
-    {"neither", "nei"},
-    {"oneself", "onef"},
-    {"ourselves", "ourvs"},
-    {"paid", "pd"},
-    {"perceive", "percv"},
-    {"perceiving", "percvg"},
-    {"perhaps", "perh"},
-    {"quick", "qk"},
-    {"receive", "rcv"},
-    {"receiving", "rcvg"},
-    {"rejoice", "rjc"},
-    {"rejoicing", "rjcg"},
-    {"said", "sd"},
-    {"should", "shd"},
-    {"such", "sch"},
-    {"themselves", "themvs"},
-    {"thyself", "thyf"},
-    {"today", "td"},
-    {"together", "tgr"},
-    {"tomorrow", "tm"},
-    {"tonight", "tn"},
-    {"would", "wd"},
-    // {"your", "yr"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"yourself", "yrf"},
-    {"yourselves", "yrvs"},
-    {"your", "yr"}  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-};
+// std::map<String, String> shortforms = {
+//     {"about", "ab"},
+//     {"above", "abv"},
+//     {"according", "ac"},
+//     {"across", "acr"},
+//     // {"after", "af"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"afternoon", "afn"},
+//     {"afterward", "afw"},
+//     {"after", "af"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     // {"again", "ag"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"against", "agst"},
+//     {"again", "ag"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"almost", "alm"},
+//     {"already", "alr"},
+//     {"also", "al"},
+//     {"although", "alth"},
+//     {"altogether", "alt"},
+//     {"always", "alw"},
+//     {"because", "bec"},
+//     {"before", "bef"},
+//     {"behind", "beh"},
+//     {"below", "bel"},
+//     {"beneath", "ben"},
+//     {"beside", "bes"},
+//     {"between", "bet"},
+//     {"beyond", "bey"},
+//     {"blind", "bl"},
+//     {"braille", "brl"},
+//     {"children", "chn"},
+//     {"conceive", "concv"},
+//     {"conceiving", "concvg"},
+//     {"could", "cd"},
+//     {"deceive", "dcv"},
+//     {"deceiving", "dcvg"},
+//     {"declare", "dcl"},
+//     {"declaring", "dclg"},
+//     {"either", "ei"},
+//     {"first", "fst"},
+//     {"friend", "fr"},
+//     {"good", "gd"},
+//     {"great", "grt"},
+//     {"herself", "herf"},
+//     // {"him", "hm"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"himself", "hmf"},
+//     {"him", "hm"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"immediate", "imm"},
+//     // {"its", "xs"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"itself", "xf"},
+//     {"its", "xs"},  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"letter", "lr"},
+//     {"little", "ll"},
+//     {"much", "mch"},
+//     {"must", "mst"},
+//     {"myself", "myf"},
+//     {"necessary", "nec"},
+//     {"neither", "nei"},
+//     {"oneself", "onef"},
+//     {"ourselves", "ourvs"},
+//     {"paid", "pd"},
+//     {"perceive", "percv"},
+//     {"perceiving", "percvg"},
+//     {"perhaps", "perh"},
+//     {"quick", "qk"},
+//     {"receive", "rcv"},
+//     {"receiving", "rcvg"},
+//     {"rejoice", "rjc"},
+//     {"rejoicing", "rjcg"},
+//     {"said", "sd"},
+//     {"should", "shd"},
+//     {"such", "sch"},
+//     {"themselves", "themvs"},
+//     {"thyself", "thyf"},
+//     {"today", "td"},
+//     {"together", "tgr"},
+//     {"tomorrow", "tm"},
+//     {"tonight", "tn"},
+//     {"would", "wd"},
+//     // {"your", "yr"}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"yourself", "yrf"},
+//     {"yourselves", "yrvs"},
+//     {"your", "yr"}  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+// };
 
-std::map<String, String> contractions = { // smaller substrings should be unique, if they appear in the larger words, put them in lower order
-    // STRONG CONTRACTIONS (Part and Whole Word)
-    {"and", " 111101 "},
-    {"for", " 111111 "},
-    {"of", " 111011 "},
-    // {"the", " 011101 "}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-    {"with", " 011111 "},
-    // INITIAL-LETTER CONTRACTIONS
-    {"day", " 000010 100110 "},
-    {"ever", " 000010 100010 "},
-    {"father", " 000010 110100 "},
-    {"here", " 000010 110010 "},
-    {"know", " 000010 101000 "},
-    {"lord", " 000010 111000 "},
-    {"mother", " 000010 101100 "},
-    {"name", " 000010 101110 "},
-    {"one", " 000010 101010 "},
-    {"part", " 000010 111100 "},
-    {"question", " 000010 111110 "},
-    {"right", " 000010 111010 "},
-    {"some", " 000010 011100 "},
-    {"time", " 000010 011110 "},
-    {"under", " 000010 101001 "},
-    {"work", " 000010 010111 "},
-    {"young", " 000010 101111 "},
-    {"there", " 000010 011101 "},
-    {"character", " 000010 100001 "},
-    {"through", " 000010 100111 "},
-    {"where", " 000010 100011 "},
-    {"ought", " 000010 110011 "},
-    {"upon", " 000110 101001 "},
-    {"word", " 000110 010111 "},
-    {"these", " 000110 011101 "},
-    {"those", " 000110 100111 "},
-    {"whose", " 000110 100011 "},
-    {"cannot", " 000111 100100 "},
-    {"had", " 000111 110010 "},
-    {"many", " 000111 101100 "},
-    {"spirit", " 000111 011100 "},
-    {"world", " 000111 010111 "},
-    {"their", " 000111 011101 "},
-    {"the", " 011101 "}  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
-};
+// std::map<String, String> contractions = { // smaller substrings should be unique, if they appear in the larger words, put them in lower order
+//     // STRONG CONTRACTIONS (Part and Whole Word)
+//     {"and", " 111101 "},
+//     {"for", " 111111 "},
+//     {"of", " 111011 "},
+//     // {"the", " 011101 "}, // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+//     {"with", " 011111 "},
+//     // INITIAL-LETTER CONTRACTIONS
+//     {"day", " 000010 100110 "},
+//     {"ever", " 000010 100010 "},
+//     {"father", " 000010 110100 "},
+//     {"here", " 000010 110010 "},
+//     {"know", " 000010 101000 "},
+//     {"lord", " 000010 111000 "},
+//     {"mother", " 000010 101100 "},
+//     {"name", " 000010 101110 "},
+//     {"one", " 000010 101010 "},
+//     {"part", " 000010 111100 "},
+//     {"question", " 000010 111110 "},
+//     {"right", " 000010 111010 "},
+//     {"some", " 000010 011100 "},
+//     {"time", " 000010 011110 "},
+//     {"under", " 000010 101001 "},
+//     {"work", " 000010 010111 "},
+//     {"young", " 000010 101111 "},
+//     {"there", " 000010 011101 "},
+//     {"character", " 000010 100001 "},
+//     {"through", " 000010 100111 "},
+//     {"where", " 000010 100011 "},
+//     {"ought", " 000010 110011 "},
+//     {"upon", " 000110 101001 "},
+//     {"word", " 000110 010111 "},
+//     {"these", " 000110 011101 "},
+//     {"those", " 000110 100111 "},
+//     {"whose", " 000110 100011 "},
+//     {"cannot", " 000111 100100 "},
+//     {"had", " 000111 110010 "},
+//     {"many", " 000111 101100 "},
+//     {"spirit", " 000111 011100 "},
+//     {"world", " 000111 010111 "},
+//     {"their", " 000111 011101 "},
+//     {"the", " 011101 "}  // keeping larger word above smaller substring gives it preference, since it appears first in matches list
+// };
 
-std::map<String, String> groupsigns_final = {
-    {"ing", " 001101 "},  // Not used at beginning, so in groupsigns final dictionary
-    // FINAL-LETTER GROUPSIGNS
-    {"ound", " 000101 100110 "},
-    {"ance", " 000101 100010 "},
-    {"sion", " 000101 101110 "},
-    {"less", " 000101 011100 "},
-    {"ount", " 000101 011110 "},
-    {"ence", " 000011 100010 "},
-    {"ong", " 000011 110110 "},
-    {"ful", " 000011 111000 "},
-    {"tion", " 000011 101110 "},
-    {"ness", " 000011 011100 "},
-    {"ment", " 000011 011110 "},
-    {"ity", " 000011 101111 "}
-};
+// std::map<String, String> groupsigns_final = {
+//     {"ing", " 001101 "},  // Not used at beginning, so in groupsigns final dictionary
+//     // FINAL-LETTER GROUPSIGNS
+//     {"ound", " 000101 100110 "},
+//     {"ance", " 000101 100010 "},
+//     {"sion", " 000101 101110 "},
+//     {"less", " 000101 011100 "},
+//     {"ount", " 000101 011110 "},
+//     {"ence", " 000011 100010 "},
+//     {"ong", " 000011 110110 "},
+//     {"ful", " 000011 111000 "},
+//     {"tion", " 000011 101110 "},
+//     {"ness", " 000011 011100 "},
+//     {"ment", " 000011 011110 "},
+//     {"ity", " 000011 101111 "}
+// };
 
-std::map<String, String> groupsigns = {
-    // STRONG GROUPSIGNS
-    {"ch", " 100001 "},
-    {"sh", " 100101 "},
-    {"th", " 100111 "},
-    {"wh", " 100011 "},
-    {"ou", " 110011 "},
-    {"st", " 001100 "},
-    {"gh", " 110001 "},
-    {"ed", " 110101 "},
-    {"er", " 110111 "},
-    {"ow", " 010101 "},
-    {"ar", " 001110 "},
-    // {"ing", " 001101 "}, # Not used at beginning, so in groupsigns final dictionary
-    // LOWER GROUPSIGNS
-    {"ea", " 010000 "},
-    {"bb", " 011000 "},
-    {"cc", " 010010 "},
-    {"ff", " 011010 "},
-    {"gg", " 011011 "},
-    {"be", " 011000 "},
-    {"con", " 010010 "},
-    {"dis", " 010011 "},
-    {"en", " 010001 "},
-    {"in", " 001010 "}
-};
+// std::map<String, String> groupsigns = {
+//     // STRONG GROUPSIGNS
+//     {"ch", " 100001 "},
+//     {"sh", " 100101 "},
+//     {"th", " 100111 "},
+//     {"wh", " 100011 "},
+//     {"ou", " 110011 "},
+//     {"st", " 001100 "},
+//     {"gh", " 110001 "},
+//     {"ed", " 110101 "},
+//     {"er", " 110111 "},
+//     {"ow", " 010101 "},
+//     {"ar", " 001110 "},
+//     // {"ing", " 001101 "}, # Not used at beginning, so in groupsigns final dictionary
+//     // LOWER GROUPSIGNS
+//     {"ea", " 010000 "},
+//     {"bb", " 011000 "},
+//     {"cc", " 010010 "},
+//     {"ff", " 011010 "},
+//     {"gg", " 011011 "},
+//     {"be", " 011000 "},
+//     {"con", " 010010 "},
+//     {"dis", " 010011 "},
+//     {"en", " 010001 "},
+//     {"in", " 001010 "}
+// };
 
 // std::map<String, String> contractions_retired = { // not used in UEB, so not used in this project
 //     {"ble", " 001111 "},
@@ -365,214 +377,3 @@ std::map<String, String> groupsigns = {
 //     {"superscript", " 001010 "}
 // };
 
-std::map<String, String> alphanumeric = {
-    // NON-UEB ALPHABET FOR OTHER LANGUAGES
-    // SPANISH
-    {"á", " 111011 "},  // 000110 001100 100000 in UEB
-    {"é", " 011101 "},  // 000110 001100 100010
-    {"í", " 001100 "},  // 000110 001100 010100
-    {"ó", " 001101 "},  // 000110 001100 101010
-    {"ú", " 011111 "},  // 000110 001100 101001
-    {"ü", " 110011 "},  // 000110 010010 101001
-    {"ñ", " 110111 "},  // 000110 110111 101110
-    // FRENCH
-    {"ç", " 111101 "},
-    // {"é", " 111111 "}, // also in Spanish
-    {"à", " 111011 "},
-    {"è", " 011101 "},
-    {"î", " 100101 "},
-    {"ô", " 100111 "},
-    {"ë", " 110101 "},
-    {"ê", " 110001 "},
-    // populate additional characters for alphanumeric
-    {"1", "100000 "},
-    {"2", "110000 "}, {"3", "100100 "}, {"4", "100110 "}, {"5", "100010 "}, {"6", "110100 "},
-    {"7", "110110 "}, {"8", "110010 "}, {"9", "010100 "}, {"0", "010110 "}, {"a", "100000 "},
-    {"b", "110000 "}, {"c", "100100 "}, {"d", "100110 "}, {"e", "100010 "}, {"f", "110100 "},
-    {"g", "110110 "}, {"h", "110010 "}, {"i", "010100 "}, {"j", "010110 "}, {"k", "101000 "},
-    {"l", "111000 "}, {"m", "101100 "}, {"n", "101110 "}, {"o", "101010 "}, {"p", "111100 "},
-    {"q", "111110 "}, {"r", "111010 "}, {"s", "011100 "}, {"t", "011110 "}, {"u", "101001 "},
-    {"v", "111001 "}, {"x", "101101 "}, {"y", "101111 "}, {"z", "101011 "}, {"w", "010111 "},
-    {"A", "000001 100000 "}, {"B", "000001 110000 "}, {"C", "000001 100100 "}, {"D", "000001 100110 "},
-    {"E", "000001 100010 "}, {"F", "000001 110100 "}, {"G", "000001 110110 "}, {"H", "000001 110010 "},
-    {"I", "000001 010100 "}, {"J", "000001 010110 "}, {"K", "000001 101000 "}, {"L", "000001 111000 "},
-    {"M", "000001 101100 "}, {"N", "000001 101110 "}, {"O", "000001 101010 "}, {"P", "000001 111100 "},
-    {"Q", "000001 111110 "}, {"R", "000001 111010 "}, {"S", "000001 011100 "}, {"T", "000001 011110 "},
-    {"U", "000001 101001 "}, {"V", "000001 111001 "}, {"X", "000001 101101 "}, {"Y", "000001 101111 "},
-    {"Z", "000001 101011 "}
-};
-
-  // // Populate alphanumeric dictionary with alphanumneric values, as in python code
-  // String alphanumeric_string = "‎1234567890abcdefghijklmnopqrstuvxyz‎‎‎‎wABCDEFGHIJKLMNOPQRSTUVXYZ‎‎‎‎W";
-  // // indices 0, 36, 37, 38, 39, 66, 67, 68, 69 unused
-
-  // std::vector<char> alphanumeric_list(alphanumeric_string.begin(), alphanumeric_string.end());
-
-  // for (int i = 0; i < alphanumeric_list.size(); i++) {
-  //   String alphanumeric_code = "";
-  //   if (isupper(alphanumeric_list[i])) {
-  //       alphanumeric_code += "000001 ";  // originally capitals were intended to be used from those populated in dictionary, now they are being converted to lowercase during processing
-  //   } else if (islower(alphanumeric_list[i])) {
-  //       // do nothing
-  //   } else if (isdigit(alphanumeric_list[i])) {
-  //       // do nothing
-  //   }
-
-  //   String str_to_append = "";
-  //   switch (i % 10) {
-  //       case 1:
-  //           str_to_append = "10";
-  //           if (i == 21 || i == 51 || i == 31 || i == 61) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "00";
-  //           if (i == 31 || i == 61) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 2:
-  //           str_to_append = "11";
-  //           if (i == 22 || i == 52 || i == 32 || i == 62) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "00";
-  //           if (i == 32 || i == 62) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 3:
-  //           str_to_append = "10";
-  //           if (i == 23 || i == 53 || i == 33 || i == 63) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "10";
-  //           if (i == 33 || i == 63) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 4:
-  //           str_to_append = "10";
-  //           if (i == 24 || i == 54 || i == 34 || i == 64) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "11";
-  //           if (i == 34 || i == 64) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 5:
-  //           str_to_append = "10";
-  //           if (i == 25 || i == 55 || i == 35 || i == 65) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "01";
-  //           if (i == 35 || i == 65) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 6:
-  //           str_to_append = "11";
-  //           if (i == 26 || i == 56 || i == 36 || i == 66) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "10";
-  //           if (i == 36 || i == 66) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 7:
-  //           str_to_append = "11";
-  //           if (i == 27 || i == 57 || i == 37 || i == 67) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "11";
-  //           if (i == 37 || i == 67) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 8:
-  //           str_to_append = "11";
-  //           if (i == 28 || i == 58 || i == 38 || i == 68) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "01";
-  //           if (i == 38 || i == 68) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 9:
-  //           str_to_append = "01";
-  //           if (i == 29 || i == 59 || i == 39 || i == 69) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "10";
-  //           if (i == 39 || i == 69) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //       case 0:
-  //           str_to_append = "01";
-  //           if (i == 30 || i == 60) {
-  //               str_to_append += "1";
-  //           } else {
-  //               str_to_append += "0";
-  //           }
-  //           str_to_append += "11";
-  //           if (i == 40 || i == 70) {
-  //               str_to_append += "1 ";
-  //           } else {
-  //               str_to_append += "0 ";
-  //           }
-  //           alphanumeric_code += str_to_append;
-  //           break;
-  //   }
-
-  //   alphanumeric[String(alphanumeric_list[i])] = alphanumeric_code;
-  // }
-
-  // alphanumeric.erase(alphanumeric.find("\u200e"));

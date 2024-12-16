@@ -1,7 +1,3 @@
-#include <Arduino.h>
-#include <ArduinoSTL.h>
-#include <string>
-
 #include "braille_dictionaries.h"
 
 // global variables
@@ -12,7 +8,7 @@ int n_cells = 4; // 0 to 5
 
 int timer_dot = 0; // ms for single dot
 int timer_cell = 100; // ms for single cell of n_dots
-int timer_display = 4000; // ms for display of n_cells
+int timer_display = 1000; // ms for display of n_cells
 
 // function declarations
 void display_braille(String brailled_text);
@@ -27,10 +23,9 @@ void setup() {
 
 }
 
-String brailled_text = "110010 100010 111000 111000 101010 000000 000001 000111 010111";
-
-
 void loop() {
+
+    String brailled_text = F("110010 100010 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000");
 
     display_braille(brailled_text);
 
@@ -53,11 +48,11 @@ void display_braille(String brailled_text) {
     brailled_list_length++;
 
     // Variables to store braille text
-    String braille_text_1 = "";
-    String braille_text_2 = "";
-    String braille_text_3 = "";
-    String braille_unicode_spaced = "";
-    String braille_unicode = "";
+    // String braille_text_1 = F("");
+    // String braille_text_2 = F("");
+    // String braille_text_3 = F("");
+    // String braille_unicode_spaced = "";
+    String braille_unicode = F("");
 
     String cell = "";
 
@@ -74,13 +69,13 @@ void display_braille(String brailled_text) {
             // Get unicode character
             if (unicode.find(cell) != unicode.end()) {
                 braille_unicode += unicode[cell];
-                braille_unicode_spaced += String("  ") + unicode[cell] + String("  ");
+                // braille_unicode_spaced += String("  ") + unicode[cell] + String("  ");
             }
 
             // Build braille text lines
-            braille_text_1 += String(" ") + cell.charAt(0) + String(" ") + cell.charAt(3) + String(" ");
-            braille_text_2 += String(" ") + cell.charAt(1) + String(" ") + cell.charAt(4) + String(" ");
-            braille_text_3 += String(" ") + cell.charAt(2) + String(" ") + cell.charAt(5) + String(" ");
+            // braille_text_1 += String(" ") + cell.charAt(0) + String(" ") + cell.charAt(3) + String(" ");
+            // braille_text_2 += String(" ") + cell.charAt(1) + String(" ") + cell.charAt(4) + String(" ");
+            // braille_text_3 += String(" ") + cell.charAt(2) + String(" ") + cell.charAt(5) + String(" ");
 
             // Set pins to display braille cell on LEDs
             for (int k = 0; k < n_dots; k++) {
@@ -92,41 +87,12 @@ void display_braille(String brailled_text) {
         delay(timer_display);
     }
 
-    // CELL-BY-CELL LOOP
-    // // loop count must be a multiple of n_cells
-    // for (int i = 0; i < (brailled_list_length + ( n_cells - (brailled_list_length % n_cells) ) ) ; i++) {
-
-    //     if (i >= (brailled_list_length) ) {
-    //       cell = "000000"; // remainder at the final n_cells loop
-    //     } else {
-    //       cell = brailled_list[i];
-    //     }
-
-    //     // Get unicode character
-    //     if (unicode.find(cell) != unicode.end()) {
-    //         braille_unicode += unicode[cell];
-    //         braille_unicode_spaced += String("  ") + unicode[cell] + String("  ");
-    //     }
-
-    //     // Build braille text lines
-    //     braille_text_1 += String(" ") + cell.charAt(0) + String(" ") + cell.charAt(3) + String(" ");
-    //     braille_text_2 += String(" ") + cell.charAt(1) + String(" ") + cell.charAt(4) + String(" ");
-    //     braille_text_3 += String(" ") + cell.charAt(2) + String(" ") + cell.charAt(5) + String(" ");
-
-    //     // Set pins to display braille cell on LEDs
-    //     for (int j = 0; j < n_dots; j++) {
-    //         digitalWrite(first_pin + (i % n_cells) * n_dots + j, cell.charAt(j) - '0');
-    //     }
-
-    //     delay(timer);
-    // }
-
     // Printing the braille text
     Serial.println(brailled_text);
-    Serial.println(braille_text_1);
-    Serial.println(braille_text_2);
-    Serial.println(braille_text_3);
-    Serial.println(braille_unicode_spaced);
-    Serial.println("");
+    // Serial.println(braille_text_1);
+    // Serial.println(braille_text_2);
+    // Serial.println(braille_text_3);
+    // Serial.println(braille_unicode_spaced);
+    Serial.println(F(""));
     Serial.println(braille_unicode);
 }
