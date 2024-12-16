@@ -35,7 +35,14 @@ void setup() {
         pinMode(pin, OUTPUT);
     }
 
-    String text = F("\"Hello World!\" 12345");
+
+}
+
+void loop() {
+
+    // String text = F("\"Hello World!\" 12345");
+
+    String text = F("pinkponyclub!");
 
     // Process
     String text_sym_spaced = space_out_symbols_punctuation(text);
@@ -49,9 +56,6 @@ void setup() {
     String brailled_text = correct_spacing(brailled_text_spaced);
 
     display_braille(brailled_text);
-}
-
-void loop() {
 
     // String brailled_text = F("110010 100010 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000");
     // display_braille(brailled_text);
@@ -186,11 +190,13 @@ String convert_capital(String brailled_text_sym) {
     String brailled_text_caps = "";
     for (int i = 0; i < brailled_text_sym.length(); i++) {
         if (isalpha(brailled_text_sym.charAt(i)) && isupper(brailled_text_sym.charAt(i))) {
-            brailled_text_caps += alphanumeric[String(brailled_text_sym.charAt(i))] + " ";
+            brailled_text_caps += " 000001 " + String(brailled_text_sym.charAt(i)) + " ";
         } else {
             brailled_text_caps += brailled_text_sym.charAt(i);
         }
     }
+
+    brailled_text_caps.toLowerCase();
 
     Serial.println(brailled_text_caps);
 
