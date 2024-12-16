@@ -22,12 +22,10 @@ String convert_symbols_punctuation(String brailled_text_num);
 String convert_capital(String brailled_text_sym);
 
 String convert_lowercase_grade1(String brailled_text_caps);
+String correct_spacing(String brailled_text_spaced);
 
 void display_braille(String brailled_text);
 
-bool isAlpha(String str);
-bool isDigit(String str);
-bool hasDigit(String str);
 
 void setup() {
 
@@ -45,12 +43,12 @@ void setup() {
 
     String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
     String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
-    // String brailled_text_caps = convert_capital(brailled_text_sym);
+    String brailled_text_caps = convert_capital(brailled_text_sym);
 
-    // String brailled_text = convert_lowercase_grade1(brailled_text_caps);
+    String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
+    String brailled_text = correct_spacing(brailled_text_spaced);
 
-
-    // display_braille(brailled_text);
+    display_braille(brailled_text);
 }
 
 void loop() {
@@ -138,7 +136,7 @@ String space_out_alphanumeric(String text_sym_spaced) {
 String convert_numeric_character(String brailled_text_num_word) {
     String brailled_text_num = "";
     for (int i = 0; i < brailled_text_num_word.length(); i++) {
-        if (isDigit(brailled_text_num_word.charAt(i))) {
+        if (isdigit(brailled_text_num_word.charAt(i))) {
             brailled_text_num += " 001111 " + alphanumeric[String(brailled_text_num_word.charAt(i))] + " ";
         } else {
             brailled_text_num += brailled_text_num_word.charAt(i);
@@ -181,94 +179,70 @@ String convert_symbols_punctuation(String brailled_text_num) {
     return brailled_text_sym;
 }
 
-// String convert_capital(String brailled_text_sym) {
-//     std::vector<String> text_list_sym;
-//     String token = "";
-//     for (int i = 0; i < brailled_text_sym.length(); i++) {
-//         if (brailled_text_sym[i] == ' ') {
-//             if (token.length() > 0) {
-//                 text_list_sym.push_back(token);
-//                 token = "";
-//             }
-//         } else {
-//             token += brailled_text_sym[i];
-//         }
-//     }
-//     if (token.length() > 0) {
-//         text_list_sym.push_back(token);
-//     }
+// TODO: Capital Word and Character functions
 
-//     String brailled_text_caps_word = "";
-//     for (int i = 0; i < text_list_sym.size(); i++) {
-//         if (text_list_sym[i].length() > 1 && isupper(text_list_sym[i][0])) {
-//             brailled_text_caps_word += " 000001 000001 " + tolower(text_list_sym[i]) + " ";
-//         } else {
-//             brailled_text_caps_word += " " + text_list_sym[i] + " ";
-//         }
-//     }
+String convert_capital(String brailled_text_sym) {
 
-//     std::vector<String> text_list_caps_word;
-//     token = "";
-//     for (int i = 0; i < brailled_text_caps_word.length(); i++) {
-//         if (brailled_text_caps_word[i] == ' ') {
-//             if (token.length() > 0) {
-//                 text_list_caps_word.push_back(token);
-//                 token = "";
-//             }
-//         } else {
-//             token += brailled_text_caps_word[i];
-//         }
-//     }
-//     if (token.length() > 0) {
-//         text_list_caps_word.push_back(token);
-//     }
+    String brailled_text_caps = "";
+    for (int i = 0; i < brailled_text_sym.length(); i++) {
+        if (isalpha(brailled_text_sym.charAt(i)) && isupper(brailled_text_sym.charAt(i))) {
+            brailled_text_caps += alphanumeric[String(brailled_text_sym.charAt(i))] + " ";
+        } else {
+            brailled_text_caps += brailled_text_sym.charAt(i);
+        }
+    }
 
-//     String brailled_text_caps = "";
-//     for (int i = 0; i < text_list_caps_word.size(); i++) {
-//         if (isupper(text_list_caps_word[i][0])) {
-//             brailled_text_caps += " 000001 " + tolower(text_list_caps_word[i]) + " ";
-//         } else {
-//             brailled_text_caps += text_list_caps_word[i];
-//         }
-//     }
+    Serial.println(brailled_text_caps);
 
-//     Serial.println(brailled_text_caps);
+    return brailled_text_caps;
+}
 
-//     return brailled_text_caps;
-// }
+String convert_lowercase_grade1(String brailled_text_caps) {
 
-// String convert_lowercase_grade1(String brailled_text_caps) {
-//     std::vector<String> text_list_caps;
-//     String token = "";
-//     for (int i = 0; i < brailled_text_caps.length(); i++) {
-//         if (brailled_text_caps[i] == ' ') {
-//             if (token.length() > 0) {
-//                 text_list_caps.push_back(token);
-//                 token = "";
-//             }
-//         } else {
-//             token += brailled_text_caps[i];
-//         }
-//     }
-//     if (token.length() > 0) {
-//         text_list_caps.push_back(token);
-//     }
+    String brailled_text_spaced = "";
+    for (int i = 0; i < brailled_text_caps.length(); i++) {
+        if (isalpha(brailled_text_caps.charAt(i))) {
+            brailled_text_spaced += alphanumeric[String(brailled_text_caps.charAt(i))];
+        } else if (isdigit(brailled_text_caps[i]) || brailled_text_caps[i] == ' ') {
+            brailled_text_spaced += brailled_text_caps.charAt(i);
+        }
+    }
 
-//     String brailled_text = "";
-//     for (int i = 0; i < text_list_caps.size(); i++) {
-//         if (alphanumeric.find(text_list_caps[i]) != alphanumeric.end() && isalpha(text_list_caps[i][0])) {
-//             brailled_text += alphanumeric[text_list_caps[i]];
-//         } else if (isdigit(text_list_caps[i][0]) || text_list_caps[i] == " ") {
-//             brailled_text += text_list_caps[i];
-//         } else {
-//             brailled_text += " 000000 ";
-//         }
-//     }
+   Serial.println(brailled_text_spaced);
 
-//    Serial.println(brailled_text);
+   return brailled_text_spaced;
+}
 
-//    return brailled_text;
-// }
+String correct_spacing(String brailled_text_spaced) {
+    std::vector<String> text_list_spaced;
+    String token = "";
+    for (int i = 0; i < brailled_text_spaced.length(); i++) {
+        if (brailled_text_spaced[i] == ' ') {
+            if (token.length() > 0) {
+                text_list_spaced.push_back(token);
+                token = "";
+            }
+        } else {
+            token += brailled_text_spaced[i];
+        }
+    }
+    if (token.length() > 0) {
+        text_list_spaced.push_back(token);
+    }
+
+    String brailled_text = "";
+    for (int i = 0; i < text_list_spaced.size(); i++) {
+        if (i > 0) {
+            brailled_text += " ";
+        }
+        brailled_text += text_list_spaced[i];
+    }
+
+    Serial.println(brailled_text);
+
+    return brailled_text;
+}
+
 
 void display_braille(String brailled_text) {
     // Splitting the brailled_text into a list
@@ -290,7 +264,7 @@ void display_braille(String brailled_text) {
     // String braille_text_2 = F("");
     // String braille_text_3 = F("");
     // String braille_unicode_spaced = "";
-    String braille_unicode = F("");
+    // String braille_unicode = F("");
 
     String cell = "";
 
@@ -326,33 +300,11 @@ void display_braille(String brailled_text) {
     }
 
     // Printing the braille text
-    Serial.println(brailled_text);
+    // Serial.println(brailled_text);
     // Serial.println(braille_text_1);
     // Serial.println(braille_text_2);
     // Serial.println(braille_text_3);
     // Serial.println(braille_unicode_spaced);
-    Serial.println(F(""));
-    Serial.println(braille_unicode);
-}
-
-
-bool isAlpha(String str) {
-    if (str.length() != 1) return false;
-    char c = str.charAt(0);
-    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-}
-
-bool isDigit(String str) {
-    if (str.length() != 1) return false;
-    char c = str.charAt(0);
-    return c >= '0' && c <= '9';
-}
-
-bool hasDigit(String str) {
-    for (int i = 0; i < str.length(); i++) {
-        if (isDigit(str.charAt(i))) {
-            return true;
-        }
-    }
-    return false;
+    // Serial.println(F(""));
+    // Serial.println(braille_unicode);
 }
