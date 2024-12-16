@@ -35,13 +35,11 @@ void setup() {
         pinMode(pin, OUTPUT);
     }
 
-
 }
 
 void loop() {
 
-    // String text = F("\"Hello World!\" 12345");
-
+    // Input
     String text = F("pinkponyclub!");
 
     // Process
@@ -55,10 +53,10 @@ void loop() {
     String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
     String brailled_text = correct_spacing(brailled_text_spaced);
 
-    display_braille(brailled_text);
+    // String brailled_text = F("111100 010100 101110 101000 111100 101010 101110 101111 100100 111000 101001 110000 011010");
 
-    // String brailled_text = F("110010 100010 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000 111000 111000 101010 000000 000001 000111 010111 110010 100010 111000 110010 100010 111000");
-    // display_braille(brailled_text);
+    // Output
+    display_braille(brailled_text);
 
 }
 
@@ -79,38 +77,7 @@ String space_out_symbols_punctuation(String text) {
         }
     }
 
-    // Opening and Closing Quotations do not display in Serial Monitor and won't convert
-    // // count all double quotations to replace for opening and closing
-    // int quotation_count = 0;
-    // for (int i = 0; i < text_sym_spaced.length(); i++) {
-    //     if (text_sym_spaced[i] == '"') {
-    //         quotation_count++;
-    //     }
-    // }
-
-    // // Replace nth substrings of "foo" to be replaced
-    // for (int n = quotation_count; n >= 2; n -= 2) {
-    //     int nthOccur = 0;
-    //     for (int i = 0; i < text_sym_spaced.length(); i++) {
-    //         if (text_sym_spaced[i] == '"') {
-    //             nthOccur++;
-    //             if (nthOccur == n) {
-    //                 text_sym_spaced[i] = '”';
-    //             } else if (nthOccur == n - 1) {
-    //                 text_sym_spaced[i] = '"';
-    //             }
-    //         }
-    //     }
-    // }
-
-    // for (int i = 0; i < text_sym_spaced.length(); i++) {
-    //     if (text_sym_spaced[i] == '"') {
-    //         text_sym_spaced[i] = '“';
-    //     }
-    // }
-
-
-    Serial.println(text_sym_spaced);
+    // Serial.println(text_sym_spaced);
 
     return text_sym_spaced;
 }
@@ -130,7 +97,7 @@ String space_out_alphanumeric(String text_sym_spaced) {
         }
     }
 
-    Serial.println(text_alphanumeric_spaced);
+    // Serial.println(text_alphanumeric_spaced);
 
     return text_alphanumeric_spaced;
 }
@@ -147,7 +114,7 @@ String convert_numeric_character(String brailled_text_num_word) {
         }
     }
 
-    Serial.println(brailled_text_num);
+    // Serial.println(brailled_text_num);
 
     return brailled_text_num;
 }
@@ -178,7 +145,7 @@ String convert_symbols_punctuation(String brailled_text_num) {
         }
     }
 
-    Serial.println(brailled_text_sym);
+    // Serial.println(brailled_text_sym);
 
     return brailled_text_sym;
 }
@@ -198,7 +165,7 @@ String convert_capital(String brailled_text_sym) {
 
     brailled_text_caps.toLowerCase();
 
-    Serial.println(brailled_text_caps);
+    // Serial.println(brailled_text_caps);
 
     return brailled_text_caps;
 }
@@ -214,9 +181,9 @@ String convert_lowercase_grade1(String brailled_text_caps) {
         }
     }
 
-   Serial.println(brailled_text_spaced);
+    // Serial.println(brailled_text_spaced);
 
-   return brailled_text_spaced;
+    return brailled_text_spaced;
 }
 
 String correct_spacing(String brailled_text_spaced) {
@@ -244,7 +211,7 @@ String correct_spacing(String brailled_text_spaced) {
         brailled_text += text_list_spaced[i];
     }
 
-    Serial.println(brailled_text);
+    // Serial.println(brailled_text);
 
     return brailled_text;
 }
