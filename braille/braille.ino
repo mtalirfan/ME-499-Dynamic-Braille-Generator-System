@@ -15,14 +15,17 @@ int timer_display = 1000 * n_cells; // ms for display of n_cells
 
 
 // function declarations
+
+String process_text_to_braille(String text);
+
 String space_out_symbols_punctuation(String text);
 String space_out_alphanumeric(String text_sym_spaced);
 
 String convert_numeric_character(String brailled_text_num_word);
 String convert_symbols_punctuation(String brailled_text_num);
 String convert_capital(String brailled_text_sym);
-
 String convert_lowercase_grade1(String brailled_text_caps);
+
 String correct_spacing(String brailled_text_spaced);
 
 void display_braille(String brailled_text);
@@ -49,53 +52,73 @@ void setup() {
 void loop() {
 
     String brailled_text = "";
+    String text = "";
 
-    // Check if data is available on the serial port
-    if (Serial.available() > 0) {
+    // Check if the serial port is connected
+    if (Serial) {
+        // Check if data is available on the serial port
+        if (Serial.available() > 0) {
+            // Read the input text from the serial monitor
+            text = Serial.readStringUntil('\n');
+            text.trim(); // Remove any leading or trailing whitespace
 
-        // Input
+            // Process
+            brailled_text = process_text_to_braille(text);
 
-        // String text = F("pinkponyclub!");
+            // Output
 
-        // Read the input text from the serial monitor
-        String text = Serial.readStringUntil('\n');
-        text.trim(); // Remove any leading or trailing whitespace
+            // keep looping the converted input until a new serial input is received
+            while ((Serial.available() == 0)) {
+              display_braille(brailled_text);
+            }
+
+            // // or outside the while loop to run once and terminate on last display
+            // display_braille(brailled_text);
+
+        } else {
+
+        // Default input text when there is no serial input at all
+        text = F("123 1 2 3 56H C6H12O6");
 
         // Process
-        String text_sym_spaced = space_out_symbols_punctuation(text);
-        String text_alphanumeric_spaced = space_out_alphanumeric(text_sym_spaced);
+        brailled_text = process_text_to_braille(text);
 
-        String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
-        String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
-        String brailled_text_caps = convert_capital(brailled_text_sym);
+        // Output
+        display_braille(brailled_text);
 
-        String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
-        
-        brailled_text = correct_spacing(brailled_text_spaced);
-
-        // brailled_text = F("111100 010100 101110 101000 111100 101010 101110 101111 100100 111000 101001 110000 011010");
-
-        // OUTPUT
-
-        // keep looping the converted input until a new serial input is received
-        // while ((Serial.available() == 0)) { 
-        //   // Output
-        //   display_braille(brailled_text);
-        // }
-
-        // // or outside the while loop to run once and terminate on last display
-        // // Output
-        // display_braille(brailled_text);
-
+        }
     }
-
-    // or put outside the if Serial.available() statement to run once and terminate on ready state, cell 1 high
-    // Output
-    display_braille(brailled_text);
 
 }
 
 // functions
+
+String process_text_to_braille(String text) {
+    String brailled_text = "";
+
+    // Space out symbols and punctuation
+    String text_sym_spaced = space_out_symbols_punctuation(text);
+
+    // Space out alphanumeric characters
+    String text_alphanumeric_spaced = space_out_alphanumeric(text_sym_spaced);
+
+    // Convert numeric characters
+    String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
+
+    // Convert symbols and punctuation
+    String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
+
+    // Convert capital letters
+    String brailled_text_caps = convert_capital(brailled_text_sym);
+
+    // Convert lowercase letters
+    String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
+
+    // Correct spacing
+    brailled_text = correct_spacing(brailled_text_spaced);
+
+    return brailled_text;
+}
 
 String space_out_symbols_punctuation(String text) {
 
@@ -172,8 +195,6 @@ String convert_symbols_punctuation(String brailled_text_num) {
     return brailled_text_sym;
 }
 
-// TODO: Capital Word and Character functions
-
 String convert_capital(String brailled_text_sym) {
     // Treat capitals next, add 000001 before and convert to lower, will do shorthand conversion later
     std::vector<String> text_list_sym = split_string(brailled_text_sym);
@@ -215,6 +236,8 @@ String convert_lowercase_grade1(String brailled_text_caps) {
             brailled_text_spaced += alphanumeric[String(brailled_text_caps.charAt(i))];
         } else if (isdigit(brailled_text_caps[i]) || brailled_text_caps[i] == ' ') {
             brailled_text_spaced += brailled_text_caps.charAt(i);
+        } else {
+          brailled_text_spaced += " 000000 ";
         }
     }
 
