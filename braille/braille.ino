@@ -10,8 +10,9 @@ int n_dots = 6; // 6-dot braille
 int n_cells = 4; // 0 to 5
 
 int timer_dot = 0; // ms for single dot
-int timer_cell = 100; // ms for single cell of n_dots
-int timer_display = 1000; // ms for display of n_cells
+int timer_cell = 20 * n_dots ; // ms for single cell of n_dots
+int timer_display = 1000 * n_cells; // ms for display of n_cells
+
 
 // function declarations
 String space_out_symbols_punctuation(String text);
@@ -26,35 +27,69 @@ String correct_spacing(String brailled_text_spaced);
 
 void display_braille(String brailled_text);
 
+String to_lowercase(String str);
+std::vector<String> split_string(const String& str);
+
+// main code
 
 void setup() {
-
-    Serial.begin(115200);
 
     for (int pin = first_pin; pin < (first_pin + n_dots * n_cells); pin++) {
         pinMode(pin, OUTPUT);
     }
 
+    Serial.begin(115200);
+    while (!Serial) {
+        ; // Wait for the serial port to connect. Needed for native USB port only
+    }
+    Serial.println("Enter the text you want to convert to Braille:");
+
 }
 
 void loop() {
 
-    // Input
-    String text = F("pinkponyclub!");
+    String brailled_text = "";
 
-    // Process
-    String text_sym_spaced = space_out_symbols_punctuation(text);
-    String text_alphanumeric_spaced = space_out_alphanumeric(text_sym_spaced);
+    // Check if data is available on the serial port
+    if (Serial.available() > 0) {
 
-    String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
-    String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
-    String brailled_text_caps = convert_capital(brailled_text_sym);
+        // Input
 
-    String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
-    String brailled_text = correct_spacing(brailled_text_spaced);
+        // String text = F("pinkponyclub!");
 
-    // String brailled_text = F("111100 010100 101110 101000 111100 101010 101110 101111 100100 111000 101001 110000 011010");
+        // Read the input text from the serial monitor
+        String text = Serial.readStringUntil('\n');
+        text.trim(); // Remove any leading or trailing whitespace
 
+        // Process
+        String text_sym_spaced = space_out_symbols_punctuation(text);
+        String text_alphanumeric_spaced = space_out_alphanumeric(text_sym_spaced);
+
+        String brailled_text_num = convert_numeric_character(text_alphanumeric_spaced);
+        String brailled_text_sym = convert_symbols_punctuation(brailled_text_num);
+        String brailled_text_caps = convert_capital(brailled_text_sym);
+
+        String brailled_text_spaced = convert_lowercase_grade1(brailled_text_caps);
+        
+        brailled_text = correct_spacing(brailled_text_spaced);
+
+        // brailled_text = F("111100 010100 101110 101000 111100 101010 101110 101111 100100 111000 101001 110000 011010");
+
+        // OUTPUT
+
+        // keep looping the converted input until a new serial input is received
+        // while ((Serial.available() == 0)) { 
+        //   // Output
+        //   display_braille(brailled_text);
+        // }
+
+        // // or outside the while loop to run once and terminate on last display
+        // // Output
+        // display_braille(brailled_text);
+
+    }
+
+    // or put outside the if Serial.available() statement to run once and terminate on ready state, cell 1 high
     // Output
     display_braille(brailled_text);
 
@@ -77,7 +112,7 @@ String space_out_symbols_punctuation(String text) {
         }
     }
 
-    // Serial.println(text_sym_spaced);
+    Serial.println(text_sym_spaced);
 
     return text_sym_spaced;
 }
@@ -97,7 +132,7 @@ String space_out_alphanumeric(String text_sym_spaced) {
         }
     }
 
-    // Serial.println(text_alphanumeric_spaced);
+    Serial.println(text_alphanumeric_spaced);
 
     return text_alphanumeric_spaced;
 }
@@ -114,27 +149,14 @@ String convert_numeric_character(String brailled_text_num_word) {
         }
     }
 
-    // Serial.println(brailled_text_num);
+    Serial.println(brailled_text_num);
 
     return brailled_text_num;
 }
 
 String convert_symbols_punctuation(String brailled_text_num) {
-    std::vector<String> text_list_num;
-    String token = "";
-    for (int i = 0; i < brailled_text_num.length(); i++) {
-        if (brailled_text_num[i] == ' ') {
-            if (token.length() > 0) {
-                text_list_num.push_back(token);
-                token = "";
-            }
-        } else {
-            token += brailled_text_num[i];
-        }
-    }
-    if (token.length() > 0) {
-        text_list_num.push_back(token);
-    }
+
+    std::vector<String> text_list_num = split_string(brailled_text_num);
 
     String brailled_text_sym = "";
     for (int i = 0; i < text_list_num.size(); i++) {
@@ -145,7 +167,7 @@ String convert_symbols_punctuation(String brailled_text_num) {
         }
     }
 
-    // Serial.println(brailled_text_sym);
+    Serial.println(brailled_text_sym);
 
     return brailled_text_sym;
 }
@@ -153,19 +175,34 @@ String convert_symbols_punctuation(String brailled_text_num) {
 // TODO: Capital Word and Character functions
 
 String convert_capital(String brailled_text_sym) {
+    // Treat capitals next, add 000001 before and convert to lower, will do shorthand conversion later
+    std::vector<String> text_list_sym = split_string(brailled_text_sym);
 
-    String brailled_text_caps = "";
-    for (int i = 0; i < brailled_text_sym.length(); i++) {
-        if (isalpha(brailled_text_sym.charAt(i)) && isupper(brailled_text_sym.charAt(i))) {
-            brailled_text_caps += " 000001 " + String(brailled_text_sym.charAt(i)) + " ";
+    // Treat capitals next, add 000001 before and convert to lower, will do shorthand conversion later
+    String brailled_text_caps_word = "";
+    for (auto& word : text_list_sym) {
+        if (word.length() > 1 && isUpperCase(word[0]) && isUpperCase(word[1]) && word.length() != 1) {
+            brailled_text_caps_word += " 000001 000001 " + to_lowercase(word);
         } else {
-            brailled_text_caps += brailled_text_sym.charAt(i);
+            brailled_text_caps_word += " " + word + " ";
         }
     }
 
-    brailled_text_caps.toLowerCase();
+    std::vector<String> text_list_caps_word = split_string(brailled_text_caps_word);
 
-    // Serial.println(brailled_text_caps);
+    // Character by character, better option is doing list item by list item first then char by char
+    String brailled_text_caps = "";
+    for (int i = 0; i < brailled_text_caps_word.length(); i++) {
+        if (isUpperCase(brailled_text_caps_word[i])) {
+            brailled_text_caps += " 000001 " + String((char)tolower(brailled_text_caps_word[i]));
+        } else {
+            brailled_text_caps += brailled_text_caps_word[i];
+        }
+    }
+
+    // brailled_text_caps.toLowerCase();
+
+    Serial.println(brailled_text_caps);
 
     return brailled_text_caps;
 }
@@ -181,7 +218,7 @@ String convert_lowercase_grade1(String brailled_text_caps) {
         }
     }
 
-    // Serial.println(brailled_text_spaced);
+    Serial.println(brailled_text_spaced);
 
     return brailled_text_spaced;
 }
@@ -211,7 +248,7 @@ String correct_spacing(String brailled_text_spaced) {
         brailled_text += text_list_spaced[i];
     }
 
-    // Serial.println(brailled_text);
+    Serial.println(brailled_text);
 
     return brailled_text;
 }
@@ -271,7 +308,6 @@ void display_braille(String brailled_text) {
         }
         delay(timer_display);
     }
-
     // Printing the braille text
     // Serial.println(brailled_text);
     // Serial.println(braille_text_1);
@@ -280,4 +316,34 @@ void display_braille(String brailled_text) {
     // Serial.println(braille_unicode_spaced);
     // Serial.println(F(""));
     // Serial.println(braille_unicode);
+}
+
+
+// Helper functions
+
+// Function to convert to lowercase
+String to_lowercase(String str) {
+    for (int i = 0; i < str.length(); i++) {
+        str[i] = tolower(str[i]);
+    }
+    return str;
+}
+
+// Function to split a string by space and return a vector of strings
+std::vector<String> split_string(const String& str) {
+    std::vector<String> result;
+    int start = 0;
+    int end = str.indexOf(' ');
+
+    while (end != -1) {
+        result.push_back(str.substring(start, end));
+        start = end + 1;
+        end = str.indexOf(' ', start);
+    }
+
+    if (start < str.length()) {
+        result.push_back(str.substring(start));
+    }
+
+    return result;
 }
