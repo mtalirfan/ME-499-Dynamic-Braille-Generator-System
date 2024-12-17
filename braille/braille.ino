@@ -7,7 +7,7 @@
 int first_pin = 22; // right-hand side pins of Arduino MEGA, 22 for cell 1, 46 for cell 5
 
 int n_dots = 6; // 6-dot braille
-int n_cells = 4; // 0 to 5
+int n_cells = 5; // 0 to 5
 
 int timer_dot = 0; // ms for single dot
 int timer_cell = 20 * n_dots ; // ms for single cell of n_dots
@@ -45,7 +45,6 @@ void setup() {
     while (!Serial) {
         ; // Wait for the serial port to connect. Needed for native USB port only
     }
-    Serial.println("Enter the text you want to convert to Braille:");
 
 }
 
@@ -78,7 +77,7 @@ void loop() {
         } else {
 
         // Default input text when there is no serial input at all
-        text = F("123 1 2 3 56H C6H12O6");
+        text = F("© 2025 mtalirfan. Created with 💜.");
 
         // Process
         brailled_text = process_text_to_braille(text);
@@ -135,7 +134,7 @@ String space_out_symbols_punctuation(String text) {
         }
     }
 
-    Serial.println(text_sym_spaced);
+    // Serial.println(text_sym_spaced);
 
     return text_sym_spaced;
 }
@@ -155,7 +154,7 @@ String space_out_alphanumeric(String text_sym_spaced) {
         }
     }
 
-    Serial.println(text_alphanumeric_spaced);
+    // Serial.println(text_alphanumeric_spaced);
 
     return text_alphanumeric_spaced;
 }
@@ -172,7 +171,7 @@ String convert_numeric_character(String brailled_text_num_word) {
         }
     }
 
-    Serial.println(brailled_text_num);
+    // Serial.println(brailled_text_num);
 
     return brailled_text_num;
 }
@@ -190,7 +189,7 @@ String convert_symbols_punctuation(String brailled_text_num) {
         }
     }
 
-    Serial.println(brailled_text_sym);
+    // Serial.println(brailled_text_sym);
 
     return brailled_text_sym;
 }
@@ -221,9 +220,7 @@ String convert_capital(String brailled_text_sym) {
         }
     }
 
-    // brailled_text_caps.toLowerCase();
-
-    Serial.println(brailled_text_caps);
+    // Serial.println(brailled_text_caps);
 
     return brailled_text_caps;
 }
@@ -237,11 +234,11 @@ String convert_lowercase_grade1(String brailled_text_caps) {
         } else if (isdigit(brailled_text_caps[i]) || brailled_text_caps[i] == ' ') {
             brailled_text_spaced += brailled_text_caps.charAt(i);
         } else {
-          brailled_text_spaced += " 000000 ";
+          brailled_text_spaced += " ";
         }
     }
 
-    Serial.println(brailled_text_spaced);
+    // Serial.println(brailled_text_spaced);
 
     return brailled_text_spaced;
 }
@@ -279,7 +276,7 @@ String correct_spacing(String brailled_text_spaced) {
 
 void display_braille(String brailled_text) {
     // Splitting the brailled_text into a list
-    String brailled_list[100]; // Assuming a maximum of 100 elements
+    String brailled_list[200]; // Assuming a maximum of 100 elements
     int brailled_list_length = 0;
     int lastIndex = 0;
     for (int i = 0; i < brailled_text.length(); i++) {
