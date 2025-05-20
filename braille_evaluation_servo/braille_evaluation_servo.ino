@@ -1,5 +1,6 @@
 #include <ArduinoSTL.h>
 #include <vector>
+#include <Servo.h>
 
 #include "braille_dictionaries.h"
 
@@ -12,8 +13,23 @@ int n_dots = 6; // 6-dot braille
 int n_cells = 1; // 1 or 2
 
 int timer_dot = 200; // ms for single dot
-int timer_cell = 400 * n_dots ; // ms for single cell of n_dots
-int timer_display = 2000 * n_cells; // ms for display of n_cells
+int timer_cell = 200 * n_dots ; // ms for single cell of n_dots
+int timer_display = 1000 * n_cells; // ms for display of n_cells
+
+
+const byte servoPins[] = {8, 9, 10, 11, 12, 13}; // {8, 9, 10, 11, 12, 13}
+
+int pos = 0;
+byte servoPos[] = {0, 0, 0, 0, 0, 0}; //leave 0
+const byte servoAttPos[] = {1, 1, 1, 1, 1, 1}; //probably leave 90
+const byte servoMinPos[] = {0, 0, 0, 0, 0, 0};
+const byte servoMaxPos[] = {4, 4, 4, 4, 4, 4};
+const byte servoInterval[] = {250, 250, 250, 250, 250, 250}; //larger numbers are slower, 250 hardly notice, 10 is quick
+int servoIncrement[] = {-1, -1, -1, -1, -1, -1}; //probably leave -1 -1, it starts off "going down" from the attach pos
+unsigned long servoPrevMillis[] = {0, 0, 0, 0, 0, 0}; //leave 0 0 
+
+const byte numberOfServos = sizeof(servoPins)/sizeof(servoPins[0]);
+Servo servo[numberOfServos];
 
 
 // function declarations
@@ -39,20 +55,24 @@ std::vector<String> split_string(const String& str);
 
 void setup() {
 
-    for (int pin = first_pin; pin < (first_pin + n_dots * n_cells); pin++) {
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, LOW);
-    }
-
-    for (int pin = first_pin_negative; pin < (first_pin_negative + n_dots * n_cells); pin++) {
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, LOW);
-    }
-
     Serial.begin(115200);
     while (!Serial) {
         ; // Wait for the serial port to connect. Needed for native USB port only
     }
+
+    for (byte i = 0; i < numberOfServos; i++)
+    {
+
+        Serial.print("Attaching servo "); Serial.print(i + 1);
+        Serial.print(" to pin "); Serial.print(servoPins[i]);
+        Serial.println("");
+        Serial.println("");
+        servoPos[i] = servoAttPos[i];
+        servo[i].write(servoPos[i]);
+        servo[i].attach(servoPins[i]);
+
+    }
+
 
 }
 
@@ -95,7 +115,7 @@ void loop() {
         } else {
 
         // Default input text when there is no serial input at all
-        text = F("ABCdef123");
+        text = F("The quick brown fox jumps over a lazy dog.");
 
         // Process
         brailled_text = process_text_to_braille(text);
@@ -346,31 +366,29 @@ void display_braille(String brailled_text) {
             // }
 
 
+            // // Build braille text lines
+            // braille_text_1 += String(" ") + cell.charAt(0) + String(" ") + cell.charAt(3) + String(" ");
+            // braille_text_2 += String(" ") + cell.charAt(1) + String(" ") + cell.charAt(4) + String(" ");
+            // braille_text_3 += String(" ") + cell.charAt(2) + String(" ") + cell.charAt(5) + String(" ");
 
-            // Build braille text lines
-            braille_text_1 += String(" ") + cell.charAt(0) + String(" ") + cell.charAt(3) + String(" ");
-            braille_text_2 += String(" ") + cell.charAt(1) + String(" ") + cell.charAt(4) + String(" ");
-            braille_text_3 += String(" ") + cell.charAt(2) + String(" ") + cell.charAt(5) + String(" ");
+            // // Serial.println(braille_unicode);
+            // Serial.println(braille_text_1);
+            // Serial.println(braille_text_2);
+            // Serial.println(braille_text_3);
+            // Serial.println("");
+            // Serial.println("");
 
-            // Serial.println(braille_unicode);
-            Serial.println(braille_text_1);
-            Serial.println(braille_text_2);
-            Serial.println(braille_text_3);
-            Serial.println("");
-            Serial.println("");
-
-            // Set pins to display braille cell on LEDs
-            for (int k = 0; k < n_dots; k++) {
-                digitalWrite(first_pin + j * n_dots + k, cell.charAt(k) - '0');
-
-                delay(timer_dot);
-
-                digitalWrite(first_pin + j * n_dots + k, LOW);
-
+            // Set pins to display braille cell on Servos
+            for (byte i = 0; i < numberOfServos; i++) {
+                if (cell.charAt(i) == '1') {
+                    servo[i].write(servoMaxPos[i]); //move the servo
+                    // delay(timer_dot);
+                } else {
+                    servo[i].write(servoMinPos[i]);
+                }
             }
 
             delay(timer_cell);
-
         }
 
         delay(timer_display);
@@ -378,10 +396,10 @@ void display_braille(String brailled_text) {
         // for all cells
         for (int j = 0; j < n_cells; j++) {
             // reset all dots
-            for (int k = 0; k < n_dots; k++) {
-                digitalWrite(first_pin_negative + j * n_dots + k, HIGH);
-                delay(timer_dot);
-                digitalWrite(first_pin_negative + j * n_dots + k, LOW);
+            for (byte i = 0; i < numberOfServos; i++)
+            {
+                servoPos[i] = servoAttPos[i];
+                servo[i].write(servoPos[i]);
             }
         }
 

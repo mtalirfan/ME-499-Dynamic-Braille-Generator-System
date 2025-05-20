@@ -4,13 +4,12 @@
 int n_dots = 6; // 6 dot braille cell
 int n_cells = 2; // 1 or 2
 
-int offset = 0; // 6 for Cell 2
 
-int first_pin = 22 + offset; // right-hand side pins of Arduino MEGA
+int first_pin = 22; // right-hand side pins of Arduino MEGA
 
-int first_pin_negative = 34 + offset;
+int first_pin_negative = 34;
 
-int timer = 1000; // ms for dot switch
+int timer = 200; // ms for dot switch
 
 void setup() {
 
