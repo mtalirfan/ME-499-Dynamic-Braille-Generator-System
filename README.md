@@ -32,50 +32,6 @@ The project deliverables will include the following:
 
 4. Test results and documentation of the project.
 
-## Project Timeline
-
-The project timeline is as follows:
-
-- Week 1-2: Project planning and research
-
-- Week 3-4: Machine design and development
-
-- Week 5-6: User interface development
-
-- Week 7-8: Software program development
-
-- Week 9-10: Testing and documentation
-
-## Project Team
-
-The project team consists of the following members:
-
-1. John Doe - Project Manager
-
-2. Jane Smith - Mechanical Engineer
-
-3. Bob Johnson - Electrical Engineer
-
-4. Sarah Brown - Software Engineer
-
-## Project Budget
-
-The project budget is as follows:
-
-- Machine components: $500
-
-- User interface development: $200
-
-- Software program development: $300
-
-- Testing and documentation: $100
-
-Total budget: $1100
-
-## Conclusion
-
-The project aims to design and develop a machine capable of dynamically generating Braille for persons with visual disability. The machine will be able to generate Braille characters in real-time based on the input provided by the user. The project team consists of members with expertise in mechanical engineering, electrical engineering, and software engineering. The project budget is $1100, and the project timeline is 10 weeks. The project deliverables will include a fully functional machine, a user interface, a software program, and test results and documentation. The project will provide a valuable resource for persons with visual disability and will help improve their quality of life.
-
 ## References
 
 1. Braille Authority of North America. (2021). Braille Basics. https://www.brailleauthority.org/braille-basics/
